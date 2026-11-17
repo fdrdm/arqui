@@ -1,0 +1,293 @@
+<title>Casa Campito</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: una columna de lectura (~68ch) con el plano a ancho completo; ficha técnica y preguntas en bloques numerados solo donde el orden importa. */
+:root{
+  --bg:#f3f4ef; --fg:#1d241c; --mut:#5c665a; --line:#cfd6c9; --panel:#e9ece3;
+  --acc:#2f6b3a; --acc-soft:#d7e6d4; --tierra:#b86a3a; --tierra-soft:#f0ddcf;
+  --sol:#c98a1a; --inv:#4a7bb5; --ok:#2f6b3a; --warn:#b86a3a;
+  --display:"Sora",system-ui,sans-serif; --body:"IBM Plex Sans",system-ui,sans-serif; --mono:"IBM Plex Mono",ui-monospace,monospace;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#171b16; --fg:#e6e9e1; --mut:#a3ab9e; --line:#333b31; --panel:#20261f;
+  --acc:#7fbf86; --acc-soft:#223526; --tierra:#e09a66; --tierra-soft:#3a2a1f;
+  --sol:#e6b453; --inv:#86b0e0; --ok:#7fbf86; --warn:#e09a66; color-scheme:dark } }
+:root[data-theme="dark"]{
+  --bg:#171b16; --fg:#e6e9e1; --mut:#a3ab9e; --line:#333b31; --panel:#20261f;
+  --acc:#7fbf86; --acc-soft:#223526; --tierra:#e09a66; --tierra-soft:#3a2a1f;
+  --sol:#e6b453; --inv:#86b0e0; --ok:#7fbf86; --warn:#e09a66; color-scheme:dark }
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.55;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:32px 64px}
+.wrap{max-width:900px;margin:0 auto;display:grid;gap:40px}
+h1,h2,h3{font-family:var(--display);text-wrap:balance;margin:0;line-height:1.15}
+h1{font-size:clamp(28px,5vw,40px);font-weight:700}
+h2{font-size:22px;font-weight:600;padding-top:6px;border-top:2px solid var(--fg);margin-bottom:14px}
+h3{font-size:16px;font-weight:600;margin-bottom:6px}
+p{margin:0 0 10px;max-width:68ch}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--mut)}
+header{display:grid;gap:10px}
+header p{color:var(--mut)}
+.ficha{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1px;background:var(--line);border:1px solid var(--line)}
+.ficha div{background:var(--panel);padding:12px 14px;min-width:0}
+.ficha .k{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--mut)}
+.ficha .v{font-size:17px;font-weight:500;font-variant-numeric:tabular-nums;margin-top:2px}
+.ficha .v small{font-size:13px;font-weight:400;color:var(--mut)}
+figure{margin:0}
+.plano{width:100%;max-width:100%;aspect-ratio:1/1;display:block;background:var(--panel);border:1px solid var(--line)}
+figcaption{font-size:13px;color:var(--mut);margin-top:8px;max-width:68ch}
+/* svg */
+.vecino{fill:none;stroke:var(--mut);stroke-width:.6;stroke-dasharray:2 1.5}
+.loteada{stroke-dasharray:none}
+.lote{stroke:var(--mut);stroke-width:.35;opacity:.7}
+.lbl-vecino{font-family:var(--mono);font-size:5.5px;fill:var(--mut);text-anchor:middle}
+.parcela{fill:var(--tierra-soft);stroke:var(--tierra);stroke-width:1.2}
+.cota{font-family:var(--mono);font-size:4.8px;fill:var(--tierra);text-anchor:middle;font-weight:500}
+.calle{font-family:var(--display);font-size:5.2px;fill:var(--fg);text-anchor:middle;font-weight:600}
+.calle.sub{font-family:var(--mono);font-size:3.8px;fill:var(--mut);font-weight:400}
+.arco{fill:none;stroke-width:.7;stroke-dasharray:1.5 1.5}
+.arco.inv{stroke:var(--inv)} .arco.ver{stroke:var(--sol)}
+.sol.inv{fill:var(--inv)} .sol.ver{fill:var(--sol)} .sol.med{fill:var(--sol)}
+.lbl-sol{font-family:var(--mono);font-size:4.2px}
+.lbl-sol.inv{fill:var(--inv)} .lbl-sol.ver,.lbl-sol.med{fill:var(--sol)}
+.viento{stroke:var(--acc);stroke-width:1}
+.lbl-viento{font-family:var(--body);font-size:4.4px;fill:var(--acc);font-weight:500}
+.norte{font-family:var(--display);font-size:7px;fill:var(--fg);font-weight:700;text-anchor:middle}
+.escala{stroke:var(--fg);stroke-width:.8}
+.lbl-escala{font-family:var(--mono);font-size:4px;fill:var(--fg)}
+.centro{fill:none;stroke:var(--tierra);stroke-width:.5}
+/* tablas */
+table{border-collapse:collapse;width:100%;font-size:14px;font-variant-numeric:tabular-nums}
+th,td{text-align:left;padding:7px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--mut);font-weight:500}
+td.n,th.n{text-align:right}
+.tabla{overflow-x:auto}
+/* entendido */
+.lista{display:grid;gap:10px;padding:0;margin:0;list-style:none}
+.lista li{display:grid;grid-template-columns:auto 1fr;gap:12px;align-items:start}
+.pill{font-family:var(--mono);font-size:11px;letter-spacing:.05em;text-transform:uppercase;padding:3px 8px;border-radius:3px;white-space:nowrap;margin-top:3px}
+.pill.ok{background:var(--acc-soft);color:var(--ok)}
+.pill.dudo{background:var(--tierra-soft);color:var(--warn)}
+/* preguntas */
+.preg{display:grid;gap:18px}
+.bloque{border-left:3px solid var(--acc);padding-left:14px}
+.bloque ol{margin:6px 0 0;padding-left:20px;display:grid;gap:6px}
+.bloque li{max-width:68ch}
+.bloque li em{color:var(--mut);font-style:italic}
+@media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+<div class="wrap">
+<header>
+  <div class="eyebrow">Implantación · lectura de los archivos · 8 nov 2026</div>
+  <h1>Casa Campito</h1>
+  <p>Parcela 1A, manzana 65, sección E, circunscripción IX, partido de La Plata (055). Villa Garibaldi / Arana, entre las calles 650, 19, 651 y 19 bis. Esto es lo que entendí de los PDFs de ARBA, el DXF, las capturas de Google Maps y el presupuesto de materiales. Abajo están las preguntas.</p>
+</header>
+
+<section>
+  <h2>Ficha del terreno</h2>
+  <div class="ficha">
+    <div><div class="k">Superficie</div><div class="v">7.499,56 m² <small>≈ 0,75 ha</small></div></div>
+    <div><div class="k">Forma</div><div class="v">Cuadrado 86,60 × 86,60 m <small>manzana completa</small></div></div>
+    <div><div class="k">Orientación</div><div class="v">Vértices a N, E, S y O <small>lados a NE, SE, SO, NO</small></div></div>
+    <div><div class="k">Frentes</div><div class="v">4 calles <small>650 · 19 · 651 · 19 bis</small></div></div>
+    <div><div class="k">Coordenadas</div><div class="v">−34,99462 · −57,86928 <small>centro de la parcela</small></div></div>
+    <div><div class="k">Gauss-Krüger faja 5</div><div class="v">X 5.694.497 · Y 6.125.874 <small>según DXF de ARBA</small></div></div>
+    <div><div class="k">Estado</div><div class="v">Baldía según catastro <small>cubierta de monte en las fotos</small></div></div>
+    <div><div class="k">Entrada</div><div class="v">Sobre calle 650 <small>anotado en la captura de Street View</small></div></div>
+  </div>
+</section>
+
+<section>
+  <h2>Plano de implantación</h2>
+  <figure>
+  <svg class="plano" viewBox="-165 -165 330 330" role="img" aria-label="Planta de la parcela con calles, vecinos, recorrido del sol y vientos">
+    <defs>
+      <marker id="flecha" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+        <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--acc)"/>
+      </marker>
+    </defs>
+    <!-- vecinos y parcela -->
+    <polygon class="vecino" points="-154.3,-204.8 -110.2,-164.3 -10.9,-71.6 -39.2,-42.3 -73.4,-6.4 -106.9,28.7 -135.1,59.0 -234.3,-33.4 -278.0,-74.1 -216.0,-139.6"/>
+<polygon class="vecino" points="-67.4,7.7 -126.5,70.7 -63.8,130.5 -4.5,67.5"/>
+<polygon class="vecino" points="-40.5,-322.6 -140.1,-219.9 -97.1,-179.1 2.3,-85.4 32.2,-116.1 66.1,-152.6 101.9,-191.1 2.8,-282.0"/>
+<polygon class="vecino" points="4.2,75.3 -55.5,138.4 7.8,197.9 67.3,134.7"/>
+<polygon class="vecino" points="69.7,5.4 10.6,68.8 74.0,127.8 133.0,64.5"/>
+<polygon class="vecino" points="78.4,-1.3 142.2,57.2 200.8,-6.6 136.9,-65.1"/>
+<polygon class="vecino loteada" points="6.6,-67.9 70.5,-9.4 129.0,-73.2 65.1,-131.7"/>
+<line class="lote" x1="13.0" y1="-62.0" x2="36.4" y2="-87.6"/>
+<line class="lote" x1="71.5" y1="-125.9" x2="48.1" y2="-100.3"/>
+<line class="lote" x1="19.4" y1="-56.2" x2="42.8" y2="-81.7"/>
+<line class="lote" x1="77.9" y1="-120.0" x2="54.5" y2="-94.5"/>
+<line class="lote" x1="25.8" y1="-50.3" x2="49.2" y2="-75.9"/>
+<line class="lote" x1="84.3" y1="-114.2" x2="60.9" y2="-88.6"/>
+<line class="lote" x1="32.2" y1="-44.5" x2="55.6" y2="-70.0"/>
+<line class="lote" x1="90.7" y1="-108.3" x2="67.3" y2="-82.8"/>
+<line class="lote" x1="38.5" y1="-38.6" x2="61.9" y2="-64.2"/>
+<line class="lote" x1="97.1" y1="-102.5" x2="73.7" y2="-76.9"/>
+<line class="lote" x1="44.9" y1="-32.8" x2="68.3" y2="-58.3"/>
+<line class="lote" x1="103.4" y1="-96.6" x2="80.0" y2="-71.1"/>
+<line class="lote" x1="51.3" y1="-26.9" x2="74.7" y2="-52.5"/>
+<line class="lote" x1="109.8" y1="-90.8" x2="86.4" y2="-65.2"/>
+<line class="lote" x1="57.7" y1="-21.1" x2="81.1" y2="-46.6"/>
+<line class="lote" x1="116.2" y1="-84.9" x2="92.8" y2="-59.4"/>
+<line class="lote" x1="64.1" y1="-15.2" x2="87.5" y2="-40.8"/>
+<line class="lote" x1="122.6" y1="-79.1" x2="99.2" y2="-53.5"/>
+<line class="lote" x1="30.0" y1="-93.4" x2="93.9" y2="-34.9"/>
+<line class="lote" x1="41.7" y1="-106.2" x2="105.6" y2="-47.7"/>
+<text class="lbl-vecino" x="-95.0" y="-30.0">Fr 7</text>
+<text class="lbl-vecino" x="-65.6" y="69.1">Mz 69</text>
+<text class="lbl-vecino" x="-5.0" y="-150.0">Fr 5</text>
+<text class="lbl-vecino" x="6.0" y="136.6">Mz 70</text>
+<text class="lbl-vecino" x="67.8" y="-70.6">Mz 61</text>
+<text class="lbl-vecino" x="71.8" y="66.6">Mz 66</text>
+<text class="lbl-vecino" x="139.6" y="-4.0">Mz 62</text>
+<polygon class="parcela" points="-2.1,-61.2 -61.2,2.2 2.2,61.2 61.2,-2.1"/>
+<text class="cota" x="-28.0" y="-26.1" transform="rotate(-47.0 -28.0 -26.1)">86,60 m</text>
+<text class="calle" x="-36.4" y="-33.9" transform="rotate(-47.0 -36.4 -33.9)">Calle 650</text>
+<text class="calle sub" x="-39.7" y="-37.0" transform="rotate(-47.0 -39.7 -37.0)">frente NO</text>
+<text class="cota" x="26.2" y="-28.0" transform="rotate(43.0 26.2 -28.0)">86,60 m</text>
+<text class="calle" x="34.0" y="-36.4" transform="rotate(43.0 34.0 -36.4)">Calle 19</text>
+<text class="calle sub" x="37.1" y="-39.7" transform="rotate(43.0 37.1 -39.7)">frente NE</text>
+<text class="cota" x="28.0" y="26.2" transform="rotate(-47.0 28.0 26.2)">86,60 m</text>
+<text class="calle" x="36.5" y="34.0" transform="rotate(-47.0 36.5 34.0)">Calle 651</text>
+<text class="calle sub" x="39.7" y="37.1" transform="rotate(-47.0 39.7 37.1)">frente SE</text>
+<text class="cota" x="-26.1" y="28.0" transform="rotate(43.0 -26.1 28.0)">86,60 m</text>
+<text class="calle" x="-33.9" y="36.5" transform="rotate(43.0 -33.9 36.5)">Calle 19 bis</text>
+<text class="calle sub" x="-37.0" y="39.7" transform="rotate(43.0 -37.0 39.7)">frente SO</text>
+    <!-- cruz en el centro -->
+    <line class="centro" x1="-4" y1="0" x2="4" y2="0"/><line class="centro" x1="0" y1="-4" x2="0" y2="4"/>
+    <!-- sol -->
+    <path class="arco inv" d="M 80.5 -44.6 A 92 92 0 0 0 -80.5 -44.6"/>
+<path class="arco ver" d="M 91.0 50.4 A 104 104 0 0 0 -91.0 50.4"/>
+<circle class="sol inv" cx="80.5" cy="-44.6" r="3"/>
+<text class="lbl-sol inv" x="88.3" y="-47.5" text-anchor="start">sale 21 jun</text>
+<circle class="sol inv" cx="-80.5" cy="-44.6" r="3"/>
+<text class="lbl-sol inv" x="-88.3" y="-47.5" text-anchor="end">se pone 21 jun</text>
+<circle class="sol ver" cx="91.0" cy="50.4" r="3"/>
+<text class="lbl-sol ver" x="98.8" y="56.3" text-anchor="start">sale 21 dic</text>
+<circle class="sol ver" cx="-91.0" cy="50.4" r="3"/>
+<text class="lbl-sol ver" x="-98.8" y="56.3" text-anchor="end">se pone 21 dic</text>
+<circle class="sol med" cx="0.0" cy="-98.0" r="3"/>
+<text class="lbl-sol med" x="0.0" y="-105.5" text-anchor="middle">mediodía · sol del norte</text>
+    <!-- vientos -->
+    <line class="viento" x1="-95.5" y1="95.5" x2="-79.2" y2="79.2" marker-end="url(#flecha)"/>
+<text class="lbl-viento" x="-100.4" y="101.9" text-anchor="end">Pampero (SO) · frío y seco</text>
+<line class="viento" x1="95.5" y1="95.5" x2="79.2" y2="79.2" marker-end="url(#flecha)"/>
+<text class="lbl-viento" x="100.4" y="101.9" text-anchor="start">Sudestada (SE) · lluvia y frío</text>
+<line class="viento" x1="0.0" y1="-135.0" x2="0.0" y2="-112.0" marker-end="url(#flecha)"/>
+<text class="lbl-viento" x="0.0" y="-140.5" text-anchor="middle">Viento norte · calor y humedad</text>
+    <!-- norte -->
+    <g transform="translate(135,-135)">
+      <line x1="0" y1="14" x2="0" y2="-10" stroke="var(--fg)" stroke-width="1.2"/>
+      <polygon points="0,-14 -4,-4 4,-4" fill="var(--fg)"/>
+      <text class="norte" x="0" y="24">N</text>
+    </g>
+    <!-- escala -->
+    <g transform="translate(-155,150)">
+      <line class="escala" x1="0" y1="0" x2="50" y2="0"/>
+      <line class="escala" x1="0" y1="-2" x2="0" y2="2"/><line class="escala" x1="25" y1="-2" x2="25" y2="2"/><line class="escala" x1="50" y1="-2" x2="50" y2="2"/>
+      <text class="lbl-escala" x="0" y="7">0</text><text class="lbl-escala" x="22" y="7">25</text><text class="lbl-escala" x="45" y="7">50 m</text>
+    </g>
+  </svg>
+  <figcaption>Geometría sacada del DXF de ARBA (capa M-PARCELA y M-LINDEROS). Las calles las dibujo por el hueco entre manzanas, que en el DXF mide entre 8 y 14 m; ARBA no da el ancho real. El recorrido del sol es para latitud 35° S: el arco azul es el 21 de junio, el ocre el 21 de diciembre; el sol siempre culmina al norte. La manzana 61 aparece loteada en 20 parcelas de 8,66 m de frente, por eso la dibujo con divisiones.</figcaption>
+  </figure>
+</section>
+
+<section>
+  <h2>Qué da cada lado</h2>
+  <div class="tabla"><table>
+    <thead><tr><th>Lado</th><th>Calle</th><th>Mira hacia</th><th>Sol</th><th>Clima</th><th>Enfrente</th></tr></thead>
+    <tbody>
+      <tr><td>NO</td><td>650 (asfaltada en Street View)</td><td>315°</td><td>Tarde, todo el año. Pega fuerte en verano a última hora</td><td>Protegido de la sudestada</td><td>Fracción 7, campo grande con un galpón largo</td></tr>
+      <tr><td>NE</td><td>19</td><td>45°</td><td>Mañana, todo el año. Es el lado más amable</td><td>Recibe el viento norte de costado</td><td>Manzana 61, loteada y con casas</td></tr>
+      <tr><td>SE</td><td>651</td><td>135°</td><td>Solo la mañana en verano</td><td>Recibe la sudestada de frente</td><td>Manzana 66, quinta con pileta</td></tr>
+      <tr><td>SO</td><td>19 bis</td><td>225°</td><td>Solo la tarde en verano</td><td>Recibe el pampero de frente</td><td>Manzana 69, quinta con pileta y arboleda</td></tr>
+    </tbody>
+  </table></div>
+  <p style="margin-top:10px">Como ningún lado mira al norte, la cara norte de la casa va a quedar en diagonal respecto de las calles, o la casa se gira respecto de la cuadrícula. Eso es una decisión de diseño que conviene tomar temprano.</p>
+</section>
+
+<section>
+  <h2>Lo que hay alrededor</h2>
+  <p>Leído de las capturas de Google Maps, no de un relevamiento. La parcela está cubierta de árboles, igual que la fracción grande al otro lado de la 650. Las manzanas hacia el sudoeste son quintas de una hectárea con pileta. Hacia el noreste, cruzando la 651 y la 19, empieza la zona loteada con casas chicas, y desde ahí hasta la 19 y la avenida 7 (al noreste) ya es tejido urbano de Arana. En Street View (abril 2024) el frente sobre la 650 es monte cerrado, con un portón de madera a la derecha de la toma.</p>
+</section>
+
+<section>
+  <h2>El presupuesto de materiales</h2>
+  <p>Presupuesto 53006 de Construyo al Costo (sucursal La Plata, calle 139 n° 1891), a nombre de Francisco Domenici, del 5 de agosto de 2026, con entrega en "650 y 20". Total con 29,5 % de descuento global: $ 2.110.272. No figura como pagado ni entregado.</p>
+  <div class="tabla"><table>
+    <thead><tr><th>Material</th><th class="n">Cantidad</th><th class="n">Total</th><th>Para qué alcanza, a ojo</th></tr></thead>
+    <tbody>
+      <tr><td>Ladrillo hueco 12×18×33, 9 agujeros</td><td class="n">1.400</td><td class="n">$ 987.322</td><td>Unos 85 a 90 m² de muro de 12 cm. Es el perímetro de una construcción de 40 a 50 m² a 2,6 m de altura, descontando aberturas</td></tr>
+      <tr><td>Hierro Ø 8 mm × 12 m</td><td class="n">70</td><td class="n">$ 685.911</td><td>840 m lineales: encadenados y columnas de una planta chica</td></tr>
+      <tr><td>Hierro Ø 4,2 mm × 12 m</td><td class="n">30</td><td class="n">$ 106.584</td><td>Estribos</td></tr>
+      <tr><td>Cemento Avellaneda × 25 kg</td><td class="n">25</td><td class="n">$ 199.725</td><td>Unos 3 a 4 m³ de hormigón, o menos si parte va a mezcla</td></tr>
+      <tr><td>Cal Cacique × 25 kg</td><td class="n">30</td><td class="n">$ 220.649</td><td>Mezcla de asiento y revoque grueso</td></tr>
+      <tr><td>Piedra 6/20 a granel</td><td class="n">6 tn</td><td class="n">$ 405.662</td><td>Hormigón</td></tr>
+      <tr><td>Arena a granel</td><td class="n">6 tn</td><td class="n">$ 278.734</td><td>Hormigón y mezcla</td></tr>
+      <tr><td>Transporte 20 km + pallet</td><td class="n"></td><td class="n">$ 76.731</td><td></td></tr>
+    </tbody>
+  </table></div>
+  <p style="margin-top:10px">Leo esto como una primera etapa chica: cimientos, encadenados y muros de un módulo de 40 a 50 m². No hay losa, techo, aberturas ni instalaciones. Si el plan es otro, necesito que me lo corrijas.</p>
+</section>
+
+<section>
+  <h2>Lo que entendí y cuánto confío</h2>
+  <ul class="lista">
+    <li><span class="pill ok">seguro</span><span>El terreno es una manzana entera de 86,60 m de lado, 7.499,56 m², con cuatro frentes. Los lados miran a NE, SE, SO y NO.</span></li>
+    <li><span class="pill ok">seguro</span><span>Está en Villa Garibaldi / Arana, La Plata, a unas 11 cuadras al sudoeste de la avenida 7, en el borde donde termina el loteo y empiezan las quintas.</span></li>
+    <li><span class="pill ok">seguro</span><span>Catastro lo tiene como baldío. En las fotos está lleno de árboles. No hay construcción visible.</span></li>
+    <li><span class="pill dudo">supongo</span><span>La entrada hoy es por la 650, que es la calle asfaltada. Las otras tres podrían ser de tierra o no estar abiertas.</span></li>
+    <li><span class="pill dudo">supongo</span><span>El PDF "Manzana de referencia para loteo" (manzana 61 dividida en 20 lotes) está porque pensás subdividir parte del terreno en algún momento, o al menos querés dejarlo posible.</span></li>
+    <li><span class="pill dudo">supongo</span><span>El presupuesto a nombre de Francisco es para una primera etapa chica en este terreno. "650 y 20" sería la forma local de nombrar la esquina, aunque catastro dice 19 y 19 bis.</span></li>
+    <li><span class="pill dudo">supongo</span><span>"Campito" es el nombre del lugar, y la casa es para uso propio, no para vender.</span></li>
+  </ul>
+</section>
+
+<section>
+  <h2>Preguntas</h2>
+  <p>Van agrupadas. Las primeras son las que más cambian el diseño; las últimas se pueden contestar más adelante.</p>
+  <div class="preg">
+    <div class="bloque"><h3>1 · Para quién y para qué</h3><ol>
+      <li>¿Quién va a vivir ahí? ¿Cuántas personas hoy, cuántas en diez años? ¿Vos, Francisco, la familia?</li>
+      <li>¿Casa de uso permanente o de fin de semana que después se vuelve permanente?</li>
+      <li>¿Qué ambientes son imprescindibles y cuáles son deseo? <em>Dormitorios, baños, oficina, taller, quincho, galería, pileta, cochera, depósito de herramientas.</em></li>
+      <li>¿Hay animales, huerta, frutales o algo productivo en el plan?</li>
+    </ol></div>
+    <div class="bloque"><h3>2 · Plata, etapas y quién construye</h3><ol>
+      <li>¿El presupuesto de Francisco es para esta casa o para otra cosa previa, como un obrador, un cerco, una casilla o un baño de obra?</li>
+      <li>¿Esos materiales ya están comprados, o es una cotización para dimensionar?</li>
+      <li>¿Cuál es el presupuesto total que imaginás, aunque sea un rango, y en cuántas etapas?</li>
+      <li>¿Autoconstrucción, un albañil de confianza o una empresa? ¿Hay un arquitecto o maestro mayor de obras para firmar planos?</li>
+      <li>¿Hay una fecha que importe? <em>Mudanza, fin del alquiler, un embarazo, una jubilación.</em></li>
+    </ol></div>
+    <div class="bloque"><h3>3 · El terreno en serio</h3><ol>
+      <li>¿Querés conservar los árboles? ¿Sabés qué especies hay y si hay alguno que valga la pena cuidar o alguno peligroso?</li>
+      <li>¿El terreno es plano? ¿Se inunda o encharca con lluvia fuerte? ¿Sabés a qué profundidad está la napa? <em>Arana es zona baja y La Plata tiene historia con esto.</em></li>
+      <li>¿Hay cerco perimetral, alambrado o algo construido, aunque sea precario? ¿El portón de madera de Street View es tuyo o del vecino?</li>
+      <li>¿Qué calles están abiertas y transitables? ¿Solo la 650 es asfalto?</li>
+      <li>¿Vas a subdividir? Si sí, ¿cuánto del terreno querés quedarte y cuánto vender? Esto decide en qué rincón va la casa.</li>
+    </ol></div>
+    <div class="bloque"><h3>4 · Servicios</h3><ol>
+      <li>¿Hay luz en la calle? ¿Ya tenés pilar o medidor?</li>
+      <li>Agua: ¿red o perforación? Si es perforación, ¿sabés la calidad del agua de la zona?</li>
+      <li>Cloaca seguro que no hay. ¿Pozo absorbente, biodigestor, humedal? ¿Tenés preferencia?</li>
+      <li>Gas: ¿red o garrafa/zeppelin? ¿Cocinar y calefaccionar a gas, leña o eléctrico?</li>
+      <li>Internet: ¿hay fibra en la zona o va a ser aire?</li>
+    </ol></div>
+    <div class="bloque"><h3>5 · Cómo te gusta vivir</h3><ol>
+      <li>¿Una planta o dos? ¿Te importa envejecer en la casa sin escaleras?</li>
+      <li>¿Casa compacta y eficiente de calefaccionar, o abierta a la galería y al monte aunque cueste más mantener la temperatura?</li>
+      <li>¿Qué casas te gustan? Fotos, links, lo que sea. ¿Qué cosas odiás de las casas donde viviste?</li>
+      <li>¿Sistema constructivo? El presupuesto sugiere ladrillo hueco y hormigón tradicional. ¿Está decidido o estás abierto a madera, steel frame, bloque, adobe?</li>
+      <li>¿Techo de chapa, losa, tejas? ¿Agua de lluvia para reusar?</li>
+    </ol></div>
+    <div class="bloque"><h3>6 · Papeles</h3><ol>
+      <li>¿El terreno está escriturado a tu nombre o de Francisco? ¿Hay plano de mensura reciente?</li>
+      <li>¿Sabés la zonificación en el código de ordenamiento urbano de La Plata? Define retiros, altura máxima, cuánto podés ocupar y si se puede subdividir.</li>
+      <li>¿Vas a presentar planos en la municipalidad desde el inicio, o construir primero y regularizar?</li>
+    </ol></div>
+  </div>
+</section>
+</div>
